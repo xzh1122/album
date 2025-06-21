@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字生活档案——相册</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 36px 32px 32px 32px;
+        }
+        h1 {
+            text-align: center;
+            color: #f76b1c;
+            margin-bottom: 32px;
+            letter-spacing: 2px;
+        }
+        form {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        input[type="file"] {
+            border: 1px solid #fda085;
+            border-radius: 6px;
+            padding: 6px 8px;
+            background: #fff7f0;
+        }
+        button {
+            background: linear-gradient(90deg, #fda085 0%, #f6d365 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 22px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(253,160,133,0.12);
+        }
+        button:hover {
+            box-shadow: 0 4px 16px rgba(253,160,133,0.18);
+        }
+        .photo-container {
+            margin-top: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+        .photo {
+            background: #fff7f0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(253,160,133,0.10);
+            padding: 14px 14px 10px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 220px;
+            transition: transform 0.15s;
+        }
+        .photo:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(253,160,133,0.18);
+        }
+        .photo img {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(253,160,133,0.10);
+        }
+        .photo .tags {
+            margin-top: 4px;
+            font-size: 15px;
+            color: #f76b1c;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        @media (max-width: 800px) {
+            .container {
+                padding: 18px 4vw 18px 4vw;
+            }
+            .photo {
+                width: 44vw;
+                min-width: 140px;
+            }
+            .photo img {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>数字生活档案——相册</h1>
+        <form id="uploadForm">
+            <label for="fileInput">上传照片：</label>
+            <input type="file" id="fileInput" name="file" accept="image/*">
+            <button type="submit">上传</button>
+        </form>
+        <div style="text-align:center; margin-bottom:18px;">
+            <button id="viewPhotos">查看照片</button>
+        </div>
+        <div class="photo-container" id="photoContainer">
+            <!-- 照片展示区域 -->
+        </div>
+    </div>
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const viewPhotosButton = document.getElementById('viewPhotos');
+        const photoContainer = document.getElementById('photoContainer');
+
+        // 上传照片
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('请选择照片上传！');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // 上传文件
+                const uploadResponse = await fetch('http://127.0.0.1:8000/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const uploadResult = await uploadResponse.json();
+                if (uploadResponse.ok) {
+                    // alert(`照片上传成功！标签：${uploadResult.tags.join(', ')}`);
+                    alert(`照片上传成功！`);
+                } else {
+                    alert('照片上传失败！');
+                }
+            } catch (error) {
+                console.error('上传失败：', error);
+                alert('上传失败！');
+            }
+        });
+
+        // 查看照片
+        viewPhotosButton.addEventListener('click', async () => {
+            // 新开一个页面展示照片
+            window.open('album.html', '_blank');
+        });
+    </script>
+</body>
+</html>

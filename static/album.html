@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的相册</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 36px 32px 32px 32px;
+        }
+        h1 {
+            text-align: center;
+            color: #f76b1c;
+            margin-bottom: 32px;
+            letter-spacing: 2px;
+        }
+        .photo-container {
+            margin-top: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+        .photo {
+            background: #fff7f0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(253,160,133,0.10);
+            padding: 14px 14px 10px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 220px;
+            transition: transform 0.15s;
+        }
+        .photo:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(253,160,133,0.18);
+        }
+        .photo img {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(253,160,133,0.10);
+        }
+        .photo .tags {
+            margin-top: 4px;
+            font-size: 15px;
+            color: #f76b1c;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        @media (max-width: 800px) {
+            .container {
+                padding: 18px 4vw 18px 4vw;
+            }
+            .photo {
+                width: 44vw;
+                min-width: 140px;
+            }
+            .photo img {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>我的相册</h1>
+        <div class="photo-container" id="photoContainer">
+            <!-- 照片展示区域 -->
+        </div>
+    </div>
+    <script>
+        const photoContainer = document.getElementById('photoContainer');
+        async function loadPhotos() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/review_photos');
+                const photos = await response.json();
+                // 按日期分组（只取年月日）
+                const grouped = {};
+                photos.forEach(photo => {
+                    // 假设文件名格式为 20250619-230006_奶牛猫.png
+                    const dateStr = photo.date; // 20250619
+                    if (!grouped[dateStr]) grouped[dateStr] = [];
+                    grouped[dateStr].push(photo);
+                });
+                // 对日期排序，从新到旧
+                const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+                sortedDates.forEach(dateStr => {
+                    // 日期标题
+                    const dateTitle = document.createElement('h2');
+                    dateTitle.style.textAlign = 'center';
+                    dateTitle.style.color = '#f76b1c';
+                    dateTitle.style.margin = '32px 0 12px 0';
+                    dateTitle.textContent = dateStr;
+                    dateTitle.style.width = '100%';
+                    photoContainer.appendChild(dateTitle);
+                    // 照片行
+                    const row = document.createElement('div');
+                    row.style.display = 'flex';
+                    row.style.flexWrap = 'wrap';
+                    row.style.gap = '24px';
+                    row.style.justifyContent = 'center';
+                    grouped[dateStr].forEach(photo => {
+                        const photoDiv = document.createElement('div');
+                        photoDiv.className = 'photo';
+                        const img = document.createElement('img');
+                        img.src = `/Users/zehua/ECNU/软件开发管理与实践/期末作业/uploads/${photo.filename}`;
+                        img.alt = photo.filename;
+                        photoDiv.appendChild(img);
+                        const tagsDiv = document.createElement('div');
+                        tagsDiv.className = 'tags';
+                        tagsDiv.textContent = `标签：${photo.tags.join(', ')}`;
+                        photoDiv.appendChild(tagsDiv);
+                        row.appendChild(photoDiv);
+                    });
+                    photoContainer.appendChild(row);
+                });
+            } catch (error) {
+                photoContainer.innerHTML = '<p style="color:red;">获取照片失败！</p>';
+                // } catch (error) {
+                //     console.error('Error loading photos:', error);
+                //     alert('获取照片失败，请稍后再试！');
+            }
+        }
+        loadPhotos();
+    </script>
+</body>
+</html>
