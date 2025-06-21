@@ -87,7 +87,7 @@
         const photoContainer = document.getElementById('photoContainer');
         async function loadPhotos() {
             try {
-                const response = await fetch('http://127.0.0.1:8000/review_photos');
+                const response = await fetch('host:port/review_photos');
                 const photos = await response.json();
                 // 按日期分组（只取年月日）
                 const grouped = {};
@@ -118,7 +118,7 @@
                         const photoDiv = document.createElement('div');
                         photoDiv.className = 'photo';
                         const img = document.createElement('img');
-                        img.src = `/Users/zehua/ECNU/软件开发管理与实践/期末作业/uploads/${photo.filename}`;
+                        img.src = `uploads/${photo.filename}`;
                         img.alt = photo.filename;
                         photoDiv.appendChild(img);
                         const tagsDiv = document.createElement('div');

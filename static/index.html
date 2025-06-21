@@ -140,7 +140,7 @@
 
             try {
                 // 上传文件
-                const uploadResponse = await fetch('http://127.0.0.1:8000/upload', {
+                const uploadResponse = await fetch('host:port/upload', {
                     method: 'POST',
                     body: formData
                 });

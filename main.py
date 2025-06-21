@@ -1,5 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from datetime import datetime
@@ -9,6 +8,7 @@ from transformers import ViTImageProcessor, ViTForImageClassification
 from PIL import Image
 from translate import Translator
 import re
+import uvicorn
 
 app = FastAPI()
 
@@ -70,8 +70,8 @@ async def get_uploaded_photos():
 
 def classify_content(file_path: str) -> List[str]:
     image = Image.open(file_path)
-    processor = ViTImageProcessor.from_pretrained('/Users/zehua/ECNU/huggingface_model/vit-base-patch16-224')
-    model = ViTForImageClassification.from_pretrained('/Users/zehua/ECNU/huggingface_model/vit-base-patch16-224')
+    processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
+    model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
 
     inputs = processor(images=image, return_tensors="pt")
     outputs = model(**inputs)
@@ -90,5 +90,4 @@ def classify_content(file_path: str) -> List[str]:
 
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
